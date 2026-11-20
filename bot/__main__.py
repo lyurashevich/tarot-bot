@@ -3,19 +3,19 @@ import logging
 
 from aiogram import Bot, Dispatcher
 
-from bot.config import get_settings
+from bot.config import get_bot_settings, get_database_settings
 from bot.db import create_engine, create_session_factory
 from bot.handlers import build_router
 
 
 async def main() -> None:
-    settings = get_settings()
+    settings = get_bot_settings()
     logging.basicConfig(
         level=settings.log_level,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
 
-    engine = create_engine(settings.database_url)
+    engine = create_engine(get_database_settings().url)
     # aiogram passes Dispatcher keyword arguments to handlers that ask for them by name.
     session_factory = create_session_factory(engine)
 

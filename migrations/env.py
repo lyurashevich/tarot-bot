@@ -6,8 +6,11 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from bot.config import get_settings
-from bot.db import Base
+from bot.config import get_database_settings
+from bot.db import (
+    Base,
+    models,  # noqa: F401  (registers models in Base.metadata)
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -18,10 +21,9 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# The database URL comes from the bot settings (.env), not from alembic.ini.
-config.set_main_option("sqlalchemy.url", get_settings().database_url)
+# The database URL comes from the database settings (.env), not from alembic.ini.
+config.set_main_option("sqlalchemy.url", get_database_settings().url)
 
-# Models must be imported before this line for autogenerate to see them.
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
