@@ -34,6 +34,13 @@ class BotSettings(BaseSettings):
     log_level: str = "INFO"
 
 
+class DeckImportSettings(BotSettings):
+    """Settings for scripts/import_deck.py."""
+
+    # Private channel where the bot posts card images to get their Telegram file_ids.
+    storage_chat_id: int
+
+
 @lru_cache
 def get_database_settings() -> DatabaseSettings:
     return DatabaseSettings()

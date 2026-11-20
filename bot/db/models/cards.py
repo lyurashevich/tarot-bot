@@ -55,10 +55,10 @@ class Deck(Base):
 
 
 class DeckCardImage(Base):
-    """The picture of a card in a particular deck.
+    """The picture of a card in a particular deck, stored on Telegram's servers.
 
-    Only the upright image is stored on disk; the reversed one is made by rotating it.
-    Telegram file_ids belong to one bot token: clear them if the bot token changes.
+    The images are uploaded once by scripts/import_deck.py to the storage channel.
+    Telegram file_ids belong to one bot: after a bot token change, run the import again.
     """
 
     __tablename__ = "deck_card_images"
@@ -69,6 +69,5 @@ class DeckCardImage(Base):
     card_id: Mapped[int] = mapped_column(
         ForeignKey("cards.id", ondelete="CASCADE"), primary_key=True
     )
-    image_path: Mapped[str] = mapped_column(String)
-    file_id_upright: Mapped[str | None] = mapped_column(String)
-    file_id_reversed: Mapped[str | None] = mapped_column(String)
+    file_id_upright: Mapped[str] = mapped_column(String)
+    file_id_reversed: Mapped[str] = mapped_column(String)
