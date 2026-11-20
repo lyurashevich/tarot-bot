@@ -1,11 +1,17 @@
-from aiogram import Router
+from aiogram import Router, html
 from aiogram.filters import CommandStart
 from aiogram.types import Message
+
+from bot import keyboards, texts
+from bot.db.models import User
 
 router = Router(name="start")
 
 
 @router.message(CommandStart())
-async def handle_start(message: Message) -> None:
-    # Placeholder: user registration and the main menu come in stage 3.
-    await message.answer("Привет! Я таро-бот. Скоро здесь появятся карта дня и расклады.")
+async def handle_start(message: Message, user: User) -> None:
+    # UserMiddleware has already registered the user by this point.
+    await message.answer(
+        texts.WELCOME.format(name=html.quote(user.first_name)),
+        reply_markup=keyboards.main_menu(),
+    )

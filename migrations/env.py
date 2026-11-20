@@ -22,7 +22,10 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # The database URL comes from the database settings (.env), not from alembic.ini.
-config.set_main_option("sqlalchemy.url", get_database_settings().url)
+# Tests set their own URL before running migrations, so it is not overwritten here.
+if not config.get_main_option("sqlalchemy.url"):
+    # "%" is special in Alembic config values and has to be doubled.
+    config.set_main_option("sqlalchemy.url", get_database_settings().url.replace("%", "%%"))
 
 target_metadata = Base.metadata
 
