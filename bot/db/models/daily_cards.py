@@ -1,7 +1,7 @@
 from datetime import date
 from enum import StrEnum
 
-from sqlalchemy import Date, ForeignKey, Text, UniqueConstraint
+from sqlalchemy import Date, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from bot.db.base import Base
@@ -25,6 +25,4 @@ class DailyCard(CreatedAtMixin, Base):
     issue_date: Mapped[date] = mapped_column(Date)
     card_id: Mapped[int] = mapped_column(ForeignKey("cards.id"))
     is_reversed: Mapped[bool]
-    # Empty while the AI has not produced a description.
-    description: Mapped[str | None] = mapped_column(Text)
     source: Mapped[DailyCardSource] = mapped_column(str_enum(DailyCardSource, "daily_card_source"))

@@ -1,4 +1,5 @@
 from functools import lru_cache
+from zoneinfo import ZoneInfo
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -32,6 +33,14 @@ class BotSettings(BaseSettings):
 
     bot_token: SecretStr
     log_level: str = "INFO"
+    # "Today" for the card of the day is the date in this time zone.
+    bot_timezone: str = "Europe/Minsk"
+    # The deck whose images users see (code from scripts/import_deck.py --deck).
+    default_deck_code: str = "rider_waite"
+
+    @property
+    def timezone(self) -> ZoneInfo:
+        return ZoneInfo(self.bot_timezone)
 
 
 class DeckImportSettings(BotSettings):

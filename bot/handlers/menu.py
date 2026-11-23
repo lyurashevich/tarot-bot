@@ -6,11 +6,6 @@ from bot import keyboards, texts
 router = Router(name="menu")
 
 
-@router.message(F.text == texts.BUTTON_DAILY_CARD)
-async def handle_daily_card(message: Message) -> None:
-    await message.answer(texts.DAILY_CARD_SOON)
-
-
 @router.message(F.text == texts.BUTTON_SPREAD)
 async def handle_spread(message: Message) -> None:
     await message.answer(texts.SPREAD_SOON)
