@@ -41,6 +41,44 @@ class DeckImportSettings(BotSettings):
     storage_chat_id: int
 
 
+class AISettings(BaseSettings):
+    """AI providers. Providers are tried in AI_PROVIDERS order; one without a key is skipped."""
+
+    model_config = _ENV
+
+    ai_providers: str = "openrouter"
+
+    groq_api_key: SecretStr | None = None
+    groq_model: str | None = None
+    openrouter_api_key: SecretStr | None = None
+    openrouter_model: str | None = None
+    mistral_api_key: SecretStr | None = None
+    mistral_model: str | None = None
+
+    ai_timeout_seconds: float = 60
+    # Upper bound for one answer. Reasoning models spend part of it on hidden thinking.
+    ai_max_tokens: int = 4096
+    ai_max_concurrency: int = 4
+    # How long to skip a provider after "rate limit exceeded" if it does not say itself.
+    # Short: on OpenRouter a 429 often means only that one free model is busy right now.
+    ai_rate_limit_cooldown_seconds: float = 60
+    # Every AI request with prompt and answer, as JSON Lines. Empty: do not write it.
+    ai_request_log_path: str = "logs/ai_requests.jsonl"
+
+    @property
+    def provider_order(self) -> list[str]:
+        return [name.strip().lower() for name in self.ai_providers.split(",") if name.strip()]
+
+    def api_key(self, provider: str) -> str | None:
+        key: SecretStr | None = getattr(self, f"{provider}_api_key", None)
+        return key.get_secret_value() if key else None
+
+    def models(self, provider: str) -> list[str]:
+        """<PROVIDER>_MODEL, which may list several models separated by commas."""
+        value: str | None = getattr(self, f"{provider}_model", None)
+        return [model.strip() for model in (value or "").split(",") if model.strip()]
+
+
 @lru_cache
 def get_database_settings() -> DatabaseSettings:
     return DatabaseSettings()

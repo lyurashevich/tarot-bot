@@ -1,10 +1,10 @@
 from enum import StrEnum
 
-from sqlalchemy import CheckConstraint, ForeignKey, SmallInteger, String
+from sqlalchemy import CheckConstraint, ForeignKey, SmallInteger, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from bot.db.base import Base
-from bot.db.models.mixins import str_enum
+from bot.db.models.mixins import CreatedAtMixin, str_enum
 
 
 class Arcana(StrEnum):
@@ -71,3 +71,18 @@ class DeckCardImage(Base):
     )
     file_id_upright: Mapped[str] = mapped_column(String)
     file_id_reversed: Mapped[str] = mapped_column(String)
+
+
+class CardDescription(CreatedAtMixin, Base):
+    """Pre-generated AI text for the card of the day, one per card and position.
+
+    Generated once by scripts/generate_descriptions.py; the meaning does not depend on the deck.
+    """
+
+    __tablename__ = "card_descriptions"
+
+    card_id: Mapped[int] = mapped_column(
+        ForeignKey("cards.id", ondelete="CASCADE"), primary_key=True
+    )
+    is_reversed: Mapped[bool] = mapped_column(primary_key=True)
+    text: Mapped[str] = mapped_column(Text)
